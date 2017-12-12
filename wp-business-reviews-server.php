@@ -6,13 +6,11 @@ session_start();
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-function wpbrs_rewrite_facebook_token_tag() {
-	add_rewrite_tag( '%facebook-token%', '([^&]+)' );
-}
-add_action( 'init', 'wpbrs_rewrite_facebook_token_tag' );
-
 function wpbrs_rewrite_facebook_token_rule() {
+	add_rewrite_tag( '%facebook-token%', '([^&]+)' );
 	add_rewrite_rule( '^facebook-token/([^/]*)/?', 'index.php?facebook-token=$matches[1]', 'top' );
+
+	// TODO: Only flush rewrite rules once on activation.
 	flush_rewrite_rules();
 }
 add_action( 'init', 'wpbrs_rewrite_facebook_token_rule' );
