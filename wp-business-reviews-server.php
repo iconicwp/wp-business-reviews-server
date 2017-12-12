@@ -45,8 +45,8 @@ function wpbrs_redirect_facebook_token_request() {
 	$redirect = isset( $_GET['wpbr_redirect'] ) ? sanitize_text_field( $_GET['wpbr_redirect'] ) : '';
 
 	$fb = new \Facebook\Facebook( [
-		'app_id'                => {FACEBOOK_APP_ID},
-		'app_secret'            => {FACEBOOK_APP_SECRET},
+		'app_id'                => WPBRS_FACEBOOK_APP_ID,
+		'app_secret'            => WPBRS_FACEBOOK_APP_SECRET,
 		'default_graph_version' => 'v2.11',
 	] );
 
@@ -82,8 +82,8 @@ add_action( 'admin_menu', 'my_plugin_menu' );
 
 function wpbr_facebook_server_request() {
 	$fb = new \Facebook\Facebook([
-		'app_id'                => {FACEBOOK_APP_ID},
-		'app_secret'            => {FACEBOOK_APP_SECRET},
+		'app_id'                => WPBRS_FACEBOOK_APP_ID,
+		'app_secret'            => WPBRS_FACEBOOK_APP_SECRET,
 		'default_graph_version' => 'v2.11',
 	]);
 
@@ -98,8 +98,8 @@ function wpbr_facebook_server_request() {
 
 function wpbr_facebook_server_response() {
 	$fb = new \Facebook\Facebook([
-		'app_id'                => {FACEBOOK_APP_ID},
-		'app_secret'            => {FACEBOOK_APP_SECRET},
+		'app_id'                => WPBRS_FACEBOOK_APP_ID,
+		'app_secret'            => WPBRS_FACEBOOK_APP_SECRET,
 		'default_graph_version' => 'v2.11',
 	]);
 
@@ -144,7 +144,7 @@ function wpbr_facebook_server_response() {
 	echo '<h3>Metadata</h3>';
 
 	// Validation (these will throw FacebookSDKException's when they fail)
-	$tokenMetadata->validateAppId({FACEBOOK_APP_ID}); // Replace {app-id} with your app id
+	$tokenMetadata->validateAppId(WPBRS_FACEBOOK_APP_ID); // Replace {app-id} with your app id
 	// If you know the user ID this access token belongs to, you can validate it here
 	//$tokenMetadata->validateUserId('123');
 	$tokenMetadata->validateExpiration();
