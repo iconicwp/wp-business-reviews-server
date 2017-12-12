@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP Business Reviews Server
  * Plugin URI:  https://wpbusinessreviews.com
- * Description: This server plugin provides authentication for WP Business Reviews platforms that cannot be authenticated in the standalone plugin.
+ * Description: The WP Business Reviews Server plugin provides authentication for platforms in the WP Business Reviews Client plugin.
  * Version:     0.1.0
  * Author:      WordImpress, LLC
  * Author URI:  https://wordimpress.com
