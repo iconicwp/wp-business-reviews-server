@@ -14,7 +14,7 @@ In order for this plugin to authenticate users via Facebook, a valid app ID and 
 ```
 define( 'WPBRS_FACEBOOK_APP_ID', '{INSERT_APP_ID_HERE}' );
 define( 'WPBRS_FACEBOOK_APP_SECRET', '{INSERT_APP_SECRET_HERE}' );
-``
+```
 
 3. Activate the plugin.
 
