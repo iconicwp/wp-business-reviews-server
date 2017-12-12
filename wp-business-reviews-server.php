@@ -13,17 +13,35 @@ require_once __DIR__ . '/vendor/autoload.php';
 register_activation_hook( __FILE__, 'wpbrs_activate' );
 register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
 
+/**
+ * Fires on plugin activation.
+ *
+ * @since 0.1.0
+ */
 function wpbrs_activate() {
 	wpbrs_add_facebook_token_rewrite();
 	flush_rewrite_rules();
 }
 
+/**
+ * Adds rewrite rules for handling facebook token URLs.
+ *
+ * @since 0.1.0
+ */
 function wpbrs_add_facebook_token_rewrite() {
 	add_rewrite_tag( '%facebook-token%', '([^&]+)' );
 	add_rewrite_rule( '^facebook-token/([^/]*)/?', 'index.php?facebook-token=$matches[1]', 'top' );
 }
 add_action( 'init', 'wpbrs_add_facebook_token_rewrite' );
 
+/**
+ * Customize template that is displayed upon receiving Facebook token.
+ *
+ * This template appears after a redirect from the Facebook confirmation screen
+ * where user permissions are granted.
+ *
+ * @since 0.1.0
+ */
 function wpbrs_include_facebook_token_response_template( $template ) {
 	if ( 'response' === get_query_var( 'facebook-token' ) ) {
 		$custom_template = plugin_dir_path( __FILE__ ) . '/views/' . 'facebook-token-response-template.php';
@@ -37,6 +55,11 @@ function wpbrs_include_facebook_token_response_template( $template ) {
 }
 add_filter( 'template_include', 'wpbrs_include_facebook_token_response_template' );
 
+/**
+ * Filters the allowed hosts that can be safely redirected.
+ *
+ * @since 0.1.0
+ */
 function wpbrs_filter_allowed_redirect_hosts( $content ) {
 	$content[] = 'facebook.com';
 
@@ -44,6 +67,14 @@ function wpbrs_filter_allowed_redirect_hosts( $content ) {
 }
 add_filter( 'allowed_redirect_hosts' , 'wpbrs_filter_allowed_redirect_hosts' );
 
+/**
+ * Redirects user to Facebook when a token is requested.
+ *
+ * This redirect is triggered when the following URL is requested:
+ * `/facebook-token/request?wpbr_redirect={REDIRECT_TO_PLUGIN_SETTINGS}`
+ *
+ * @since 0.1.0
+ */
 function wpbrs_redirect_facebook_token_request() {
 	// Bail out if query var or redirect parameter are not available.
 	if (
@@ -73,6 +104,14 @@ function wpbrs_redirect_facebook_token_request() {
 }
 add_action( 'template_redirect', 'wpbrs_redirect_facebook_token_request' );
 
+/**
+ * Retrieves Facebook user access token.
+ *
+ * The Facebook PHP SDK is used to get the user access token based on a code
+ * provided by Facebook in the redirect URL.
+ *
+ * @since 0.1.0
+ */
 function wpbrs_get_facebook_user_access_token() {
 	$fb = new \Facebook\Facebook(
 		array(
