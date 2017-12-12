@@ -9,14 +9,20 @@ if ( session_status() === PHP_SESSION_NONE ) {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-function wpbrs_rewrite_facebook_token_rule() {
-	add_rewrite_tag( '%facebook-token%', '([^&]+)' );
-	add_rewrite_rule( '^facebook-token/([^/]*)/?', 'index.php?facebook-token=$matches[1]', 'top' );
+// Ensure rewrite rules are only flushed on activation/deactivation.
+register_activation_hook( __FILE__, 'wpbrs_activate' );
+register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
 
-	// TODO: Only flush rewrite rules once on activation.
+function wpbrs_activate() {
+	wpbrs_add_facebook_token_rewrite();
 	flush_rewrite_rules();
 }
-add_action( 'init', 'wpbrs_rewrite_facebook_token_rule' );
+
+function wpbrs_add_facebook_token_rewrite() {
+	add_rewrite_tag( '%facebook-token%', '([^&]+)' );
+	add_rewrite_rule( '^facebook-token/([^/]*)/?', 'index.php?facebook-token=$matches[1]', 'top' );
+}
+add_action( 'init', 'wpbrs_add_facebook_token_rewrite' );
 
 function wpbrs_include_facebook_token_response_template( $template ) {
 	if ( 'response' === get_query_var( 'facebook-token' ) ) {
