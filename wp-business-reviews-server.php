@@ -39,7 +39,7 @@ function wpbrs_filter_allowed_redirect_hosts( $content ){
 add_filter( 'allowed_redirect_hosts' , 'wpbrs_filter_allowed_redirect_hosts' );
 
 function wpbrs_redirect_facebook_token_request() {
-	// Bail out if query var or redirect parameter are not provided.
+	// Bail out if query var or redirect parameter are not available.
 	if (
 		'request' !== get_query_var( 'facebook-token' )
 		|| ! isset( $_GET['wpbr_redirect'] )
@@ -49,71 +49,33 @@ function wpbrs_redirect_facebook_token_request() {
 
 	$redirect = sanitize_text_field( $_GET['wpbr_redirect'] );
 
-	error_log( print_r( $redirect, true ) );
-
-	$fb = new \Facebook\Facebook( [
+	$fb = new \Facebook\Facebook( array(
 		'app_id'                => WPBRS_FACEBOOK_APP_ID,
 		'app_secret'            => WPBRS_FACEBOOK_APP_SECRET,
 		'default_graph_version' => 'v2.11',
-	] );
+	) );
 
-	$helper = $fb->getRedirectLoginHelper();
-	$permissions = ['manage_pages'];
+	$helper      = $fb->getRedirectLoginHelper();
+	$permissions = array( 'manage_pages' );
+	$url         = 'http://wpbr-facebook-server.dev/facebook-token/response/?wpbr_redirect=' . urlencode( $redirect );
+	$login_url   = $helper->getLoginUrl( $url, $permissions );
 
-	$url       = 'http: //wpbr-facebook-server.dev/facebook-token/response/?wpbr_redirect = ' . urlencode( $redirect );
-	$login_url = $helper->getLoginUrl( $url, $permissions );
-
-	wp_safe_redirect( $login_url );
+	wp_redirect( $login_url );
 	exit;
 }
 add_action( 'template_redirect', 'wpbrs_redirect_facebook_token_request' );
 
-function my_plugin_menu() {
-	add_options_page(
-		'Request Page',
-		'Request Page',
-		'manage_options',
-		'wpbr_facebook_server_request',
-		'wpbr_facebook_server_request'
-	);
-
-	add_options_page(
-		'Response Page',
-		'Response Page',
-		'manage_options',
-		'wpbr_facebook_server_response',
-		'wpbr_facebook_server_response'
-	);
-}
-add_action( 'admin_menu', 'my_plugin_menu' );
-
-function wpbr_facebook_server_request() {
-	$fb = new \Facebook\Facebook([
+function wpbrs_get_facebook_token() {
+	$fb = new \Facebook\Facebook( array(
 		'app_id'                => WPBRS_FACEBOOK_APP_ID,
 		'app_secret'            => WPBRS_FACEBOOK_APP_SECRET,
 		'default_graph_version' => 'v2.11',
-	]);
-
-	$helper = $fb->getRedirectLoginHelper();
-	$permissions = ['manage_pages'];
-	$loginUrl = $helper->getLoginUrl( 'http://wpbr-facebook-server.dev/wp-admin/options-general.php?page=wpbr_facebook_server_response', $permissions );
-
-	echo '<a href="' . htmlspecialchars($loginUrl) . '">Log in with Facebook!</a>';
-
-	var_dump($_SESSION);
-}
-
-function wpbr_facebook_server_response() {
-	$fb = new \Facebook\Facebook([
-		'app_id'                => WPBRS_FACEBOOK_APP_ID,
-		'app_secret'            => WPBRS_FACEBOOK_APP_SECRET,
-		'default_graph_version' => 'v2.11',
-	]);
+	) );
 
 	$helper = $fb->getRedirectLoginHelper();
 
 	try {
-		$accessToken = $helper->getAccessToken();
+		$access_token = $helper->getAccessToken();
 	} catch(Facebook\Exceptions\FacebookResponseException $e) {
 		// When Graph returns an error
 		echo 'Graph returned an error: ' . $e->getMessage();
@@ -124,7 +86,7 @@ function wpbr_facebook_server_response() {
 		exit;
 	}
 
-	if (! isset($accessToken)) {
+	if (! isset($access_token)) {
 		if ($helper->getError()) {
 		header('HTTP/1.0 401 Unauthorized');
 		echo "Error: " . $helper->getError() . "\n";
@@ -138,48 +100,25 @@ function wpbr_facebook_server_response() {
 		exit;
 	}
 
-	// Logged in
-	echo '<h3>Access Token</h3>';
-	// var_dump($accessToken->getValue());
-	var_dump($accessToken);
-
 	// The OAuth 2.0 client handler helps us manage access tokens
-	$oAuth2Client = $fb->getOAuth2Client();
+	$oauth2_client = $fb->getOAuth2Client();
 
-	// Get the access token metadata from /debug_token
-	$tokenMetadata = $oAuth2Client->debugToken($accessToken);
-	echo '<h3>Metadata</h3>';
+	// Get the access token metadata.
+	$token_metadata = $oauth2_client->debugToken($access_token);
 
-	// Validation (these will throw FacebookSDKException's when they fail)
-	$tokenMetadata->validateAppId(WPBRS_FACEBOOK_APP_ID); // Replace {app-id} with your app id
-	// If you know the user ID this access token belongs to, you can validate it here
-	//$tokenMetadata->validateUserId('123');
-	$tokenMetadata->validateExpiration();
+	// Validate token (these will throw FacebookSDKException's when they fail).
+	$token_metadata->validateAppId(WPBRS_FACEBOOK_APP_ID); // Replace {app-id} with your app id
+	$token_metadata->validateExpiration();
 
-	if (! $accessToken->isLongLived()) {
+	if (! $access_token->isLongLived()) {
 		// Exchanges a short-lived access token for a long-lived one
 		try {
-			$accessToken = $oAuth2Client->getLongLivedAccessToken($accessToken);
+			$access_token = $oauth2_client->getLongLivedAccessToken($access_token);
 		} catch (Facebook\Exceptions\FacebookSDKException $e) {
 			echo "<p>Error getting long-lived access token: " . $helper->getMessage() . "</p>\n\n";
 			exit;
 		}
-
-		echo '<h3>Long-lived</h3>';
-		var_dump($accessToken->getValue());
 	}
 
-	$_SESSION['fb_access_token'] = (string) $accessToken;
-
-	// User is logged in with a long-lived access token.
-	// You can redirect them to a members-only page.
-	//header('Location: https://example.com/members.php');
-
-	var_dump($tokenMetadata);
-
-	$accounts = $fb->sendRequest('GET', '/me/accounts', [], $accessToken, 'eTag', 'v2.11');
-
-	echo '<h2>Accounts</h2>';
-	echo '<pre>' . print_r($accounts, true) . '</pre>';
+	return $access_token->getValue();
 }
-
