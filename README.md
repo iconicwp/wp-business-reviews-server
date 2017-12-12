@@ -10,10 +10,12 @@ In order for this plugin to authenticate users via Facebook, a valid app ID and 
 
 1. Visit https://developers.facebook.com/apps/ and select an app to access the app ID and app secret.
 2. Define the following constants in `wp-config.php`:
+
 ```
 define( 'WPBRS_FACEBOOK_APP_ID', '{INSERT_APP_ID_HERE}' );
 define( 'WPBRS_FACEBOOK_APP_SECRET', '{INSERT_APP_SECRET_HERE}' );
 ``
+
 3. Activate the plugin.
 
 The plugin is now ready to authenticate users who wish to connect to Facebook through the WP Business Reviews plugin.
