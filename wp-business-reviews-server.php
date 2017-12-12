@@ -61,7 +61,7 @@ add_filter( 'template_include', 'wpbrs_include_facebook_token_response_template'
  * @since 0.1.0
  */
 function wpbrs_filter_allowed_redirect_hosts( $content ) {
-	$content[] = 'facebook.com';
+	$content[] = 'www.facebook.com';
 
 	return $content;
 }
@@ -98,8 +98,9 @@ function wpbrs_redirect_facebook_token_request() {
 	$permissions = array( 'manage_pages' );
 	$url         = 'http://wpbr-facebook-server.dev/facebook-token/response/?wpbr_redirect=' . urlencode( $redirect );
 	$login_url   = $helper->getLoginUrl( $url, $permissions );
+	error_log( print_r( $login_url, true ) );
 
-	wp_redirect( $login_url );
+	wp_safe_redirect( $login_url );
 	exit;
 }
 add_action( 'template_redirect', 'wpbrs_redirect_facebook_token_request' );
