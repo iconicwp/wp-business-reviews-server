@@ -36,11 +36,17 @@ function wpbrs_filter_allowed_redirect_hosts( $content ){
 add_filter( 'allowed_redirect_hosts' , 'wpbrs_filter_allowed_redirect_hosts' );
 
 function wpbrs_redirect_facebook_token_request() {
-	if ( 'request' !== get_query_var( 'facebook-token' ) ) {
+	// Bail out if query var or redirect parameter are not provided.
+	if (
+		'request' !== get_query_var( 'facebook-token' )
+		|| ! isset( $_GET['wpbr_redirect'] )
+	) {
 		return;
 	}
 
-	$redirect = isset( $_GET['wpbr_redirect'] ) ? sanitize_text_field( $_GET['wpbr_redirect'] ) : '';
+	$redirect = sanitize_text_field( $_GET['wpbr_redirect'] );
+
+	error_log( print_r( $redirect, true ) );
 
 	$fb = new \Facebook\Facebook( [
 		'app_id'                => WPBRS_FACEBOOK_APP_ID,
@@ -51,10 +57,10 @@ function wpbrs_redirect_facebook_token_request() {
 	$helper = $fb->getRedirectLoginHelper();
 	$permissions = ['manage_pages'];
 
-	$url = 'http://wpbr-facebook-server.dev/facebook-token/response/?wpbr_redirect=' . urlencode( $redirect );
-	$loginUrl = $helper->getLoginUrl( $url, $permissions );
+	$url       = 'http: //wpbr-facebook-server.dev/facebook-token/response/?wpbr_redirect = ' . urlencode( $redirect );
+	$login_url = $helper->getLoginUrl( $url, $permissions );
 
-	wp_safe_redirect( $loginUrl );
+	wp_safe_redirect( $login_url );
 	exit;
 }
 add_action( 'template_redirect', 'wpbrs_redirect_facebook_token_request' );
