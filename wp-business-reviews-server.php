@@ -105,7 +105,8 @@ function wpbrs_redirect_facebook_token_request() {
 
 	$helper      = $fb->getRedirectLoginHelper();
 	$permissions = array( 'manage_pages' );
-	$url         = 'http://wpbr-facebook-server.dev/facebook-token/response/?wpbr_redirect=' . urlencode( $redirect );
+	$url         = get_home_url() . '/facebook-token/response/?wpbr_redirect=' . urlencode( $redirect );
+	error_log( print_r( $url, true ) );
 	$login_url   = $helper->getLoginUrl( $url, $permissions );
 
 	wp_safe_redirect( $login_url );
