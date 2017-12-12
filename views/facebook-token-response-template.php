@@ -9,4 +9,8 @@ get_header();
 	<input type="submit" value="<?php esc_html_e( 'Return to WP Business Reviews Settings', 'wp-business-reviews-server' ) ?>">
 </form>
 
+<script>
+	document.getElementById( 'wpbr-facebook-user-access-token-form' ).submit();
+</script>
+
 <?php get_footer() ?>
