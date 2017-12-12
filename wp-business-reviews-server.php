@@ -1,6 +1,15 @@
 <?php
 /**
  * Plugin Name: WP Business Reviews Server
+ * Plugin URI:  https://wpbusinessreviews.com
+ * Description: This server plugin provides authentication for WP Business Reviews platforms that cannot be authenticated in the standalone plugin.
+ * Version:     0.1.0
+ * Author:      WordImpress, LLC
+ * Author URI:  https://wordimpress.com
+ * License:     GPL-2.0+
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain: wp-business-reviews-server
+ * Domain Path: /languages
  */
 
 if ( session_status() === PHP_SESSION_NONE ) {
