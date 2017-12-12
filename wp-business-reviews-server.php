@@ -67,7 +67,7 @@ function wpbrs_redirect_facebook_token_request() {
 }
 add_action( 'template_redirect', 'wpbrs_redirect_facebook_token_request' );
 
-function wpbrs_get_facebook_token() {
+function wpbrs_get_facebook_user_access_token() {
 	$fb = new \Facebook\Facebook(
 		array(
 			'app_id'                => WPBRS_FACEBOOK_APP_ID,

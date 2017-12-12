@@ -1,5 +1,5 @@
 <?php
-$token         = wpbrs_get_facebook_token();
+$token         = wpbrs_get_facebook_user_access_token();
 $wpbr_redirect = isset( $_GET['wpbr_redirect'] ) ? sanitize_text_field( $_GET['wpbr_redirect'] ): '';
 get_header();
 ?>
