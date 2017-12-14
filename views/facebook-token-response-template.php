@@ -5,7 +5,7 @@ get_header();
 ?>
 
 <form id="wpbr-facebook-user-access-token-form" action="<?php echo esc_attr( $wpbr_redirect ); ?>" method="post">
-	<input type="hidden" name="wpbr_facebook_user_access_token" value="<?php echo esc_attr( $user_access_token ); ?>">
+	<input type="hidden" name="wpbr_facebook_user_token" value="<?php echo esc_attr( $user_access_token ); ?>">
 	<input type="submit" value="<?php esc_html_e( 'Return to WP Business Reviews Settings', 'wp-business-reviews-server' ) ?>">
 </form>
 
