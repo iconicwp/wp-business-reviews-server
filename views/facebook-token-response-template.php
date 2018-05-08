@@ -1,6 +1,6 @@
 <?php
 $user_access_token = wpbrs_get_facebook_user_access_token();
-$wpbr_redirect = isset( $_GET['wpbr_redirect'] ) ? sanitize_text_field( $_GET['wpbr_redirect'] ) : '';
+$wpbr_redirect     = isset( $_GET['wpbr_redirect'] ) ? sanitize_text_field( $_GET['wpbr_redirect'] ) : '';
 wp_head();
 ?>
 
@@ -8,6 +8,7 @@ wp_head();
 	body {
 		background-color: #ECF0F1;
 	}
+
 	#wpbr-facebook-user-access-token-form {
 		background-color: white;
 		border-radius: 0.5rem;
@@ -15,8 +16,9 @@ wp_head();
 		margin: 1.5rem auto;
 		padding: 1.5rem;
 		max-width: 600px;
-		text-align:center;
+		text-align: center;
 	}
+
 	#wpbr-facebook-user-access-token-form .button {
 		padding: 10px 20px;
 	}
@@ -38,5 +40,5 @@ wp_head();
 
 
 <script>
-	document.getElementById( 'wpbr-facebook-user-access-token-form' ).submit();
+	setTimeout( function() { document.getElementById( 'wpbr-facebook-user-access-token-form' ).submit(); }, 3000 );
 </script>
