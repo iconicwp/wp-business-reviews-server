@@ -12,6 +12,8 @@
  * Domain Path: /languages
  */
 
+define( 'WPBRS_FACEBOOK_GRAPH_API_VERSION', 'v3.0' );
+
 if ( session_status() === PHP_SESSION_NONE ) {
 	session_start();
 }
@@ -99,7 +101,7 @@ function wpbrs_redirect_facebook_token_request() {
 		array(
 			'app_id'                => WPBRS_FACEBOOK_APP_ID,
 			'app_secret'            => WPBRS_FACEBOOK_APP_SECRET,
-			'default_graph_version' => 'v2.11',
+			'default_graph_version' => WPBRS_FACEBOOK_GRAPH_API_VERSION,
 		)
 	);
 
@@ -128,7 +130,7 @@ function wpbrs_get_facebook_user_access_token() {
 		array(
 			'app_id'                => WPBRS_FACEBOOK_APP_ID,
 			'app_secret'            => WPBRS_FACEBOOK_APP_SECRET,
-			'default_graph_version' => 'v2.11',
+			'default_graph_version' => WPBRS_FACEBOOK_GRAPH_API_VERSION,
 		)
 	);
 
