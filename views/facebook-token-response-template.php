@@ -5,39 +5,33 @@ wp_head();
 ?>
 
 <style>
-	body {
-		background-color: #ECF0F1;
-	}
-
-	#wpbr-facebook-user-access-token-form {
-		background-color: white;
-		border-radius: 0.5rem;
-		box-shadow: 0 0.375rem 0.375rem rgba(44, 62, 80, 0.05);
-		margin: 1.5rem auto;
-		padding: 1.5rem;
-		max-width: 600px;
-		text-align: center;
-	}
-
-	#wpbr-facebook-user-access-token-form .button {
-		padding: 10px 20px;
+	html {
+		margin: 0 !important;
 	}
 </style>
 
 <header id="masthead" class="site-header" role="banner">
 	<div class="site-header__container site-header__container--center">
-		<span class="site-logo site-logo--header"><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/img/logo-wp-business-reviews.png' ); ?>"
-		                                               alt="<?php echo esc_attr__( 'WP Business Reviews', 'wpbr' ); ?>"></span>
+		<span class="site-logo site-logo--header"><img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/img/logo-wp-business-reviews.png' ); ?>" alt="<?php echo esc_attr__( 'WP Business Reviews', 'wpbr' ); ?>"></span>
 	</div>
 </header>
-<section class="band band--pad-v">
-	<form id="wpbr-facebook-user-access-token-form" action="<?php echo esc_attr( $wpbr_redirect ); ?>" method="post">
-		<p>Thank you for connecting to Facebook!</p>
-		<input type="hidden" name="wpbr_facebook_user_token" value="<?php echo esc_attr( $user_access_token ); ?>">
-		<input type="submit" class="button" value="<?php esc_html_e( 'Return to WP Business Reviews Settings', 'wp-business-reviews-server' ) ?>">
-	</form>
-</section>
 
+<form id="wpbr-facebook-user-access-token-form" action="<?php echo esc_attr( $wpbr_redirect ); ?>" method="post">
+	<section class="band band--pad-v">
+		<div class="layout layout--container">
+			<div class="layout__item layout__item--island">
+				<div class="card card--center">
+					<div class="card__body">
+						<h2 class="card__heading"><?php echo esc_html__( 'You\'re Connected!', 'wp-business-reviews-server' ); ?></h2>
+						<p class="card__description"><?php echo esc_html__( 'Thank you for connecting to Facebook. You will be redirected to plugin settings in a moment.', 'wp-business-reviews-server' ); ?></p>
+						<input type="hidden" name="wpbr_facebook_user_token" value="<?php echo esc_attr( $user_access_token ); ?>">
+						<input type="submit" class="button button--primary button--x-large" value="<?php esc_html_e( 'Return to Plugin Settings', 'wp-business-reviews-server' ) ?>">
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</form>
 
 <script>
 	setTimeout( function() { document.getElementById( 'wpbr-facebook-user-access-token-form' ).submit(); }, 3000 );
