@@ -33,7 +33,7 @@ function wpbrs_activate() {
 }
 
 /**
- * Adds rewrite rules for handling facebook token URLs.
+ * Adds rewrite rules for handling Facebook token URLs.
  *
  * @since 0.1.0
  */
@@ -44,7 +44,7 @@ function wpbrs_add_facebook_token_rewrite() {
 add_action( 'init', 'wpbrs_add_facebook_token_rewrite' );
 
 /**
- * Customize template that is displayed upon receiving Facebook token.
+ * Customizes template that is displayed upon receiving Facebook token.
  *
  * This template appears after a redirect from the Facebook confirmation screen
  * where user permissions are granted.
@@ -121,6 +121,7 @@ add_action( 'template_redirect', 'wpbrs_redirect_facebook_token_request' );
  * provided by Facebook in the redirect URL.
  *
  * @since 0.1.0
+ * @see https://developers.facebook.com/docs/php/howto/example_facebook_login
  */
 function wpbrs_get_facebook_user_access_token() {
 	$fb = new \Facebook\Facebook(
