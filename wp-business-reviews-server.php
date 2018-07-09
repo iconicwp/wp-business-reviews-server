@@ -54,15 +54,26 @@ add_action( 'init', 'wpbrs_add_facebook_token_rewrite' );
  * @since 0.1.0
  */
 function wpbrs_include_facebook_token_response_template( $template ) {
-	if ( 'response' === get_query_var( 'facebook-token' ) ) {
-		$custom_template = plugin_dir_path( __FILE__ ) . '/views/' . 'facebook-token-response-template.php';
+	if ( 'response' !== get_query_var( 'facebook-token' ) ) {
+		return $template;
+	}
 
-		if ( file_exists( $custom_template ) ) {
-			return $custom_template;
+	if ( isset( $_REQUEST['error'] ) ) {
+		$redirect = isset( $_GET['wpbr_redirect'] ) ? sanitize_text_field( wp_unslash( $_GET['wpbr_redirect'] ) ) : '';
+
+		if ( $redirect ) {
+			wp_redirect( $redirect );
+			exit;
+		} else {
+			wp_die( __( 'Sorry, an error occurred while connecting to Facebook and a redirect could not be found.', 'wp-business-reviews-server' ) );
 		}
 	}
 
-	return $template;
+	$custom_template = plugin_dir_path( __FILE__ ) . '/views/' . 'facebook-token-response-template.php';
+
+	if ( file_exists( $custom_template ) ) {
+		return $custom_template;
+	}
 }
 add_filter( 'template_include', 'wpbrs_include_facebook_token_response_template' );
 
@@ -167,6 +178,9 @@ function wpbrs_get_facebook_user_access_token() {
 
 	// Get the access token metadata.
 	$token_metadata = $oauth2_client->debugToken( $access_token );
+
+	error_log( print_r( 'Token Metadata:', true ) );
+	error_log( print_r( $token_metadata, true ) );
 
 	// Validate token (these will throw FacebookSDKException's when they fail).
 	$token_metadata->validateAppId( WPBRS_FACEBOOK_APP_ID ); // Replace {app-id} with your app id
