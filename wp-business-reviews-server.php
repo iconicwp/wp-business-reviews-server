@@ -4,8 +4,8 @@
  * Plugin URI:  https://wpbusinessreviews.com
  * Description: The WP Business Reviews Server plugin provides authentication for platforms in the WP Business Reviews Client plugin.
  * Version:     0.1.0
- * Author:      WordImpress, LLC
- * Author URI:  https://wordimpress.com
+ * Author:      Team Impress
+ * Author URI:  https://impress.org
  * License:     GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain: wp-business-reviews-server
@@ -14,7 +14,10 @@
 
 define( 'WPBRS_FACEBOOK_GRAPH_API_VERSION', 'v3.0' );
 
-if ( session_status() === PHP_SESSION_NONE ) {
+if (
+	( defined( 'WP_DEBUG' ) && WP_DEBUG )
+	&& session_status() === PHP_SESSION_NONE
+) {
 	session_start();
 }
 
@@ -43,6 +46,7 @@ function wpbrs_add_facebook_token_rewrite() {
 	add_rewrite_tag( '%facebook-token%', '([^&]+)' );
 	add_rewrite_rule( '^facebook-token/([^/]*)/?', 'index.php?facebook-token=$matches[1]', 'top' );
 }
+
 add_action( 'init', 'wpbrs_add_facebook_token_rewrite' );
 
 /**
@@ -75,6 +79,7 @@ function wpbrs_include_facebook_token_response_template( $template ) {
 		return $custom_template;
 	}
 }
+
 add_filter( 'template_include', 'wpbrs_include_facebook_token_response_template' );
 
 /**
@@ -87,7 +92,8 @@ function wpbrs_filter_allowed_redirect_hosts( $content ) {
 
 	return $content;
 }
-add_filter( 'allowed_redirect_hosts' , 'wpbrs_filter_allowed_redirect_hosts' );
+
+add_filter( 'allowed_redirect_hosts', 'wpbrs_filter_allowed_redirect_hosts' );
 
 /**
  * Redirects user to Facebook when a token is requested.
@@ -120,11 +126,12 @@ function wpbrs_redirect_facebook_token_request() {
 	$permissions = array( 'manage_pages' );
 	$url         = get_home_url() . '/facebook-token/response/?wpbr_redirect=' . urlencode( $redirect );
 	error_log( print_r( $url, true ) );
-	$login_url   = $helper->getLoginUrl( $url, $permissions );
+	$login_url = $helper->getLoginUrl( $url, $permissions );
 
 	wp_safe_redirect( $login_url );
 	exit;
 }
+
 add_action( 'template_redirect', 'wpbrs_redirect_facebook_token_request' );
 
 /**
@@ -134,7 +141,7 @@ add_action( 'template_redirect', 'wpbrs_redirect_facebook_token_request' );
  * provided by Facebook in the redirect URL.
  *
  * @since 0.1.0
- * @see https://developers.facebook.com/docs/php/howto/example_facebook_login
+ * @see   https://developers.facebook.com/docs/php/howto/example_facebook_login
  */
 function wpbrs_get_facebook_user_access_token() {
 	$fb = new \Facebook\Facebook(
