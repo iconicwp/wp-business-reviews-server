@@ -15,7 +15,7 @@
 define( 'WPBRS_FACEBOOK_GRAPH_API_VERSION', 'v3.0' );
 
 if (
-	( defined( 'WP_DEBUG' ) && WP_DEBUG )
+	isset( $_GET['wpbr_redirect'] )
 	&& session_status() === PHP_SESSION_NONE
 ) {
 	session_start();
