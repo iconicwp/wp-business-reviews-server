@@ -92,7 +92,7 @@ class WPBR_Trustpilot_API {
 			$logo           = $this->get_logo_url( $search_result['id'] );
 			$reviews        = $this->get_reviews( $search_result['id'] );
 
-			$tp_response = array_merge( $search_result, $review_source, $web_links, $logo, $reviews );
+			$tp_response = array_merge( $search_result, $review_source, $public_profile, $web_links, $logo, $reviews );
 			set_transient( 'tp_api_response_' . $license_key, $tp_response, HOUR_IN_SECONDS );
 			echo json_encode( $tp_response );
 
