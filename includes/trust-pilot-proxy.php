@@ -9,15 +9,14 @@
 
 class WPBR_Trustpilot_API {
 
-
 	/**
-	 * Is this a valid request?
+	 * License key
 	 *
-	 * @var bool
+	 * @var string
 	 * @access private
 	 * @since  1.1
 	 */
-	private $is_valid_request = false;
+	private $license_key;
 
 	/**
 	 * Instantiates the Trust_Pilot object.
@@ -57,7 +56,7 @@ class WPBR_Trustpilot_API {
 		global $wp_query;
 
 		// Check for give-api var. Get out if not present
-		if ( ! isset ( $wp_query->query_vars['tp-api'] ) ) {
+		if ( ! isset( $wp_query->query_vars['tp-api'] ) ) {
 			return;
 		}
 
@@ -68,24 +67,64 @@ class WPBR_Trustpilot_API {
 		header( 'Content-Type: application/json' );
 
 		// Check license validation before passing to API.
-		$license_key = isset( $_GET['license'] ) ? sanitize_text_field( $_GET['license'] ) : '';
-		$domain      = isset( $_GET['domain'] ) ? $_GET['domain'] : '';
+		$this->license_key = isset( $_GET['license'] ) ? sanitize_text_field( $_GET['license'] ) : '';
+		$domain            = isset( $_GET['domain'] ) ? sanitize_text_field( $_GET['domain'] ) : '';
+		$business_id       = isset( $_GET['business_id'] ) ? sanitize_text_field( $_GET['business_id'] ) : '';
 
 		// Save status check in transient.
-		if ( false === ( $license_status = get_transient( 'tp_api_' . $license_key ) ) ) {
-			$license_status = edd_software_licensing()->get_license_status( $license_key );
-			set_transient( 'tp_api_' . $license_key, $license_status, HOUR_IN_SECONDS );
+		if ( false === ( $license_status = get_transient( 'tp_api_' . $this->license_key ) ) ) {
+			$license_status = edd_software_licensing()->get_license_status( $this->license_key );
+			set_transient( 'tp_api_' . $this->license_key, $license_status, HOUR_IN_SECONDS );
 		}
 
-		$tp_response = get_transient( 'tp_api_response_' . $license_key );
+		// Ensure license is active.
+		if ( 'active' !== $license_status ) {
+			// TODO: Error response here.
+			return;
+		}
 
-		// Check response
-		if (
-			'active' === $license_status
-			&& ! empty( $domain )
-			&& false === ( $tp_response ) ) {
+		$transient_domain = get_transient( 'tp_api_domain_' . $this->license_key );
 
-			$search_result  = $this->search_review_source( $domain );
+		// Domain search request
+		if ( ! empty( $domain ) && $domain !== $transient_domain ) {
+
+			echo json_encode( $this->trustpilot_requests( $domain ) );
+
+		} elseif ( ! empty( $business_id ) ) {
+
+			// Check for response transient
+			$tp_response = get_transient( 'tp_api_response_' . $this->license_key );
+
+			if ( false === $tp_response && ! empty( $transient_domain ) ) {
+				$this->trustpilot_requests( $transient_domain );
+			}
+
+			echo json_encode( $tp_response );
+		}
+
+		exit;
+
+	}
+
+	/**
+	 * Hit the Trustpilot API.
+	 *
+	 * @param $domain
+	 *
+	 * @return array
+	 */
+	private function trustpilot_requests( $domain ) {
+
+		// Set transient for domain for use in later requests.
+		set_transient( 'tp_api_domain_' . $this->license_key, $domain, HOUR_IN_SECONDS );
+
+		// Find business result.
+		$search_result = $this->search_review_source( $domain );
+
+		// Must return business ID.
+		if ( isset( $search_result['id'] ) && ! empty( $search_result['id'] ) ) {
+
+			// API requests.
 			$review_source  = $this->get_review_source( $search_result['id'] );
 			$public_profile = $this->get_public_profile( $search_result['id'] );
 			$web_links      = $this->get_web_links( $search_result['id'] );
@@ -93,28 +132,12 @@ class WPBR_Trustpilot_API {
 			$reviews        = $this->get_reviews( $search_result['id'] );
 
 			$tp_response = array_merge( $search_result, $review_source, $public_profile, $web_links, $logo, $reviews );
-			set_transient( 'tp_api_response_' . $license_key, $tp_response, HOUR_IN_SECONDS );
-			echo json_encode( $tp_response );
 
-		} else {
-			echo json_encode( $tp_response );
+			// Set transient to limit API requests.
+			set_transient( 'tp_api_response_' . $this->license_key, $tp_response, HOUR_IN_SECONDS );
 		}
 
-//		if ( 'active' === $license_status ) {
-//
-//			// If doing a Business ID lookup:
-//
-//			if ( ! empty( $domain ) ) {
-//
-//
-//				echo json_encode( $response );
-//
-//			}
-//
-//
-//		}
-
-		exit;
+		return $tp_response;
 
 	}
 
@@ -185,7 +208,6 @@ class WPBR_Trustpilot_API {
 			),
 			"https://api.trustpilot.com/v1/business-units/{$id}"
 		);
-
 
 		$response = $this->get( $url, array() );
 
@@ -269,11 +291,11 @@ class WPBR_Trustpilot_API {
 	}
 
 	/**
-	 * Retrieves reviews based on Yelp business ID.
+	 * Retrieves reviews based on Trustpilot business ID.
 	 *
 	 * @since 1.3.0
 	 *
-	 * @param string $id The Yelp business ID.
+	 * @param string $id The Trustpilot business ID.
 	 *
 	 * @return array|\WP_Error Associative array containing response or WP_Error
 	 *                        if response structure is invalid.
