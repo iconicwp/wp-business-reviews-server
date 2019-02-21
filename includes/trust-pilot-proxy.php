@@ -69,7 +69,7 @@ class WPBR_Trustpilot_API {
 
 		// Check license validation before passing to API.
 		$license_key = isset( $_GET['license'] ) ? sanitize_text_field( $_GET['license'] ) : '';
-		$domain = isset( $_GET['domain'] ) ? $_GET['domain'] : '';
+		$domain      = isset( $_GET['domain'] ) ? $_GET['domain'] : '';
 
 		// Save status check in transient.
 		if ( false === ( $license_status = get_transient( 'tp_api_' . $license_key ) ) ) {
@@ -85,18 +85,19 @@ class WPBR_Trustpilot_API {
 			&& ! empty( $domain )
 			&& false === ( $tp_response ) ) {
 
-			$search_result = $this->search_review_source( $domain );
-			$review_source = $this->get_review_source( $search_result['id'] );
-			$web_links     = $this->get_web_links( $search_result['id'] );
-			$logo          = $this->get_logo_url( $search_result['id'] );
-			$reviews       = $this->get_reviews( $search_result['id'] );
+			$search_result  = $this->search_review_source( $domain );
+			$review_source  = $this->get_review_source( $search_result['id'] );
+			$public_profile = $this->get_public_profile( $search_result['id'] );
+			$web_links      = $this->get_web_links( $search_result['id'] );
+			$logo           = $this->get_logo_url( $search_result['id'] );
+			$reviews        = $this->get_reviews( $search_result['id'] );
 
 			$tp_response = array_merge( $search_result, $review_source, $web_links, $logo, $reviews );
 			set_transient( 'tp_api_response_' . $license_key, $tp_response, HOUR_IN_SECONDS );
-			echo json_encode($tp_response);
+			echo json_encode( $tp_response );
 
 		} else {
-			echo json_encode($tp_response);
+			echo json_encode( $tp_response );
 		}
 
 //		if ( 'active' === $license_status ) {
