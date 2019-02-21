@@ -82,11 +82,11 @@ class WPBR_Trustpilot_API {
 			$domain = isset( $_GET['domain'] ) ? $_GET['domain'] : '';
 			if ( ! empty( $domain ) ) {
 
-				$business_id   = $this->search_review_source( $domain );
-				$review_source = $this->get_review_source( $business_id );
-				$web_links     = $this->get_web_links( $business_id );
+				$search_result = $this->search_review_source( $domain );
+				$review_source = $this->get_review_source( $search_result['id'] );
+				$web_links     = $this->get_web_links( $search_result['id'] );
 
-				$response = array_merge( $business_id, $review_source, $web_links );
+				$response = array_merge( $search_result, $review_source, $web_links );
 				echo json_encode( $response );
 
 
