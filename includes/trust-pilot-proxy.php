@@ -55,13 +55,17 @@ class WPBR_Trustpilot_API {
 	public function process_query() {
 
 		global $wp_query;
-		status_header( 200 );
-		header( 'Content-Type: application/json' );
 
 		// Check for give-api var. Get out if not present
 		if ( ! isset ( $wp_query->query_vars['tp-api'] ) ) {
 			return;
 		}
+
+		/**
+		 * Begin API requests.
+		 */
+		status_header( 200 );
+		header( 'Content-Type: application/json' );
 
 		// Check license validation before passing to API.
 		$license_key = isset( $_GET['license'] ) ? sanitize_text_field( $_GET['license'] ) : '';
