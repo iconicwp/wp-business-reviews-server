@@ -69,6 +69,7 @@ class WPBR_Trustpilot_API {
 
 		// Check license validation before passing to API.
 		$license_key = isset( $_GET['license'] ) ? sanitize_text_field( $_GET['license'] ) : '';
+		$domain = isset( $_GET['domain'] ) ? $_GET['domain'] : '';
 
 		// Save status check in transient.
 		if ( false === ( $license_status = get_transient( 'tp_api_' . $license_key ) ) ) {
@@ -76,28 +77,41 @@ class WPBR_Trustpilot_API {
 			set_transient( 'tp_api_' . $license_key, $license_status, HOUR_IN_SECONDS );
 		}
 
-		if ( 'active' === $license_status ) {
+		$tp_response = get_transient( 'tp_api_response_' . $license_key );
 
-			// If doing a Business ID lookup:
-			$domain = isset( $_GET['domain'] ) ? $_GET['domain'] : '';
-			if ( ! empty( $domain ) ) {
+		// Check response
+		if (
+			'active' === $license_status
+			&& ! empty( $domain )
+			&& false === ( $tp_response ) ) {
 
-				$search_result = $this->search_review_source( $domain );
-				$review_source = $this->get_review_source( $search_result['id'] );
-				$web_links     = $this->get_web_links( $search_result['id'] );
+			$search_result = $this->search_review_source( $domain );
+			$review_source = $this->get_review_source( $search_result['id'] );
+			$web_links     = $this->get_web_links( $search_result['id'] );
+			$logo          = $this->get_logo_url( $search_result['id'] );
+			$reviews       = $this->get_reviews( $search_result['id'] );
 
-				$response = array_merge( $search_result, $review_source, $web_links );
-				echo json_encode( $response );
+			$tp_response = array_merge( $search_result, $review_source, $web_links, $logo, $reviews );
+			set_transient( 'tp_api_response_' . $license_key, $tp_response, HOUR_IN_SECONDS );
+			echo json_encode($tp_response);
 
-
-			}
-//			$tp_profile     = $this->get_review_source( $this->key );
-//			$public_profile = $this->get_public_profile( $this->key );
-//			$web_links      = $this->get_web_links( $this->key );
-//			$profile_img    = $this->get_logo_url( $this->key );
-
-
+		} else {
+			echo json_encode($tp_response);
 		}
+
+//		if ( 'active' === $license_status ) {
+//
+//			// If doing a Business ID lookup:
+//
+//			if ( ! empty( $domain ) ) {
+//
+//
+//				echo json_encode( $response );
+//
+//			}
+//
+//
+//		}
 
 		exit;
 
@@ -279,9 +293,7 @@ class WPBR_Trustpilot_API {
 			return new \WP_Error( 'wpbr_no_reviews', __( 'No reviews found. Although reviews may exist on the platform, none were returned from the platform API.', 'wp-business-reviews' ) );
 		}
 
-		$reviews = $response['reviews'];
-
-		return $reviews;
+		return $response;
 	}
 
 	/**
