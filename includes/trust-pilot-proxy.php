@@ -82,9 +82,13 @@ class WPBR_Trustpilot_API {
 			$domain = isset( $_GET['domain'] ) ? $_GET['domain'] : '';
 			if ( ! empty( $domain ) ) {
 
-				$business_id = $this->search_review_source( $domain );
+				$business_id   = $this->search_review_source( $domain );
+				$review_source = $this->get_review_source( $business_id );
+				$web_links     = $this->get_web_links( $business_id );
 
-				echo json_encode( $business_id );
+				$response = array_merge( $business_id, $review_source, $web_links );
+				echo json_encode( $response );
+
 
 			}
 //			$tp_profile     = $this->get_review_source( $this->key );
@@ -143,8 +147,6 @@ class WPBR_Trustpilot_API {
 		if ( ! isset( $response['id'] ) ) {
 			return new \WP_Error( 'wpbr_no_review_sources', __( 'No results found. Enter the primary domain of your business as it appears on Trustpilot for best results.', 'wp-business-reviews' ) );
 		}
-
-		$response = array_merge( $response, $this->get_review_source( $response['id'] ) );
 
 		return $response;
 	}
