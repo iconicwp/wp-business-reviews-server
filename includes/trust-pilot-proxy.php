@@ -9,6 +9,16 @@
 
 class WPBR_Trustpilot_API {
 
+
+	/**
+	 * Trustpilot API key
+	 *
+	 * @var string
+	 * @access private
+	 * @since  1.1
+	 */
+
+	private $key;
 	/**
 	 * License key
 	 *
@@ -70,6 +80,12 @@ class WPBR_Trustpilot_API {
 		$this->license_key = isset( $_GET['license'] ) ? sanitize_text_field( $_GET['license'] ) : '';
 		$domain            = isset( $_GET['domain'] ) ? sanitize_text_field( $_GET['domain'] ) : '';
 		$business_id       = isset( $_GET['business_id'] ) ? sanitize_text_field( $_GET['business_id'] ) : '';
+
+		// Need license key to continue.
+		if ( empty( $this->license_key ) ) {
+			// TODO: Error response.
+			return;
+		}
 
 		// Save status check in transient.
 		if ( false === ( $license_status = get_transient( 'tp_api_' . $this->license_key ) ) ) {
