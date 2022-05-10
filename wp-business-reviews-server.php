@@ -15,7 +15,7 @@
 // Include Trustpilot API proxy
 require_once __DIR__ . '/includes/trust-pilot-proxy.php';
 
-define( 'WPBRS_FACEBOOK_GRAPH_API_VERSION', 'v3.0' );
+define( 'WPBRS_FACEBOOK_GRAPH_API_VERSION', 'v11.0' );
 
 if (
 	isset( $_GET['wpbr_redirect'] )
@@ -107,6 +107,7 @@ add_filter( 'allowed_redirect_hosts', 'wpbrs_filter_allowed_redirect_hosts' );
  * @since 0.1.0
  */
 function wpbrs_redirect_facebook_token_request() {
+
 	// Bail out if query var or redirect parameter are not available.
 	if (
 		'request' !== get_query_var( 'facebook-token' )
@@ -126,10 +127,8 @@ function wpbrs_redirect_facebook_token_request() {
 	);
 
 	$helper      = $fb->getRedirectLoginHelper();
-	$permissions = array( 'manage_pages' );
 	$url         = get_home_url() . '/facebook-token/response/?wpbr_redirect=' . urlencode( $redirect );
-	error_log( print_r( $url, true ) );
-	$login_url = $helper->getLoginUrl( $url, $permissions );
+	$login_url = $helper->getLoginUrl( $url, [] );
 
 	wp_safe_redirect( $login_url );
 	exit;
