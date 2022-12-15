@@ -130,7 +130,7 @@ function wpbrs_redirect_facebook_token_request() {
 	$url         = get_home_url() . '/facebook-token/response/?wpbr_redirect=' . urlencode( $redirect );
 	$permissions = array( 'pages_show_list', 'pages_read_user_content' );
 
-	$login_url = $helper->getLoginUrl( $url,$permissions );
+	$login_url = $helper->getLoginUrl( $url, $permissions );
 
 	wp_safe_redirect( $login_url );
 	exit;
