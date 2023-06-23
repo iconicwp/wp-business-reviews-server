@@ -3,7 +3,7 @@
  * Plugin Name: WP Business Reviews Server
  * Plugin URI:  https://wpbusinessreviews.com
  * Description: The WP Business Reviews Server plugin provides authentication for platforms in the WP Business Reviews Client plugin.
- * Version:     0.1.1
+ * Version:     0.1.2
  * Author:      Team Impress
  * Author URI:  https://impress.org
  * License:     GPL-2.0+
@@ -104,6 +104,7 @@ add_filter( 'allowed_redirect_hosts', 'wpbrs_filter_allowed_redirect_hosts' );
  * This redirect is triggered when the following URL is requested:
  * `/facebook-token/request?wpbr_redirect={REDIRECT_TO_PLUGIN_SETTINGS}`
  *
+ * @since 0.1.2 add pages_read_engagement to permissions
  * @since 0.1.0
  */
 function wpbrs_redirect_facebook_token_request() {
