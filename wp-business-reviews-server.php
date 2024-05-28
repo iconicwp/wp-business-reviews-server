@@ -15,7 +15,7 @@
 // Include Trustpilot API proxy
 require_once __DIR__ . '/includes/trust-pilot-proxy.php';
 
-define( 'WPBRS_FACEBOOK_GRAPH_API_VERSION', 'v11.0' );
+define( 'WPBRS_FACEBOOK_GRAPH_API_VERSION', 'v14.0' );
 
 if (
 	isset( $_GET['wpbr_redirect'] )
