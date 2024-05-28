@@ -3,7 +3,7 @@
  * Plugin Name: WP Business Reviews Server
  * Plugin URI:  https://wpbusinessreviews.com
  * Description: The WP Business Reviews Server plugin provides authentication for platforms in the WP Business Reviews Client plugin.
- * Version:     0.1.2
+ * Version:     0.1.3
  * Author:      Team Impress
  * Author URI:  https://impress.org
  * License:     GPL-2.0+
@@ -15,7 +15,7 @@
 // Include Trustpilot API proxy
 require_once __DIR__ . '/includes/trust-pilot-proxy.php';
 
-define( 'WPBRS_FACEBOOK_GRAPH_API_VERSION', 'v11.0' );
+define( 'WPBRS_FACEBOOK_GRAPH_API_VERSION', 'v14.0' );
 
 if (
 	isset( $_GET['wpbr_redirect'] )
